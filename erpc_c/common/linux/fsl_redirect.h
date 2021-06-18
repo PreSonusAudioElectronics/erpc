@@ -1,6 +1,6 @@
 /*
-*   Throwaway redirection of NXP erpc example to linux
-*/
+ *   Throwaway redirection of NXP erpc example to linux
+ */
 #ifndef _fsl_redirect_h
 #define _fsl_redirect_h
 

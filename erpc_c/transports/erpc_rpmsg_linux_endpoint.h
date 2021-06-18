@@ -26,7 +26,7 @@
  * ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  * This file was copied and renamed from https://github.com/EmbeddedRPC/erpc-imx-demos/tree/master/middleware/rpmsg-cpp
  * Adding the prefix "erpc_" to the filename
  */
@@ -74,7 +74,7 @@ public:
      */
     int8_t init();
 
-     /*!
+    /*!
      * @brief This function sends the messages.
      *
      * @param[in] buffer Buffer to send.
@@ -92,11 +92,11 @@ public:
     int32_t receive(uint8_t *buffer, uint32_t maxlen);
 
 private:
-    int16_t m_id; /*!< Channel id */
-    int8_t m_type;/*!< Endpoint socket type. */
-    int16_t m_addr;/*!< Local address. */
-    int16_t m_remote;/*!< Remote address. */
-    int16_t m_currentDST;/*!< Current remote destination address. */
-    int16_t m_fd; /*!< File descriptor for sending/receiving messages. */
+    int16_t m_id;             /*!< Channel id */
+    int8_t m_type;            /*!< Endpoint socket type. */
+    int16_t m_addr;           /*!< Local address. */
+    int16_t m_remote;         /*!< Remote address. */
+    int16_t m_currentDST;     /*!< Current remote destination address. */
+    int16_t m_fd;             /*!< File descriptor for sending/receiving messages. */
     const char *m_rpmsg_root; /*!< Linux RPMsg root path. */
 };

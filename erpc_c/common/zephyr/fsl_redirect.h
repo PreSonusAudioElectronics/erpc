@@ -1,6 +1,6 @@
 /*
-*   Throwaway redirection of NXP erpc example to zephyr
-*/
+ *   Throwaway redirection of NXP erpc example to zephyr
+ */
 #ifndef _fsl_redirect_h
 #define _fsl_redirect_h
 

@@ -8,6 +8,7 @@ target_include_directories( pep PUBLIC
     ${CMAKE_CURRENT_LIST_DIR}/erpc_c/port
     ${CMAKE_CURRENT_LIST_DIR}/erpc_c/setup
     ${CMAKE_CURRENT_LIST_DIR}/erpc_c/transports
+    ${CMAKE_CURRENT_LIST_DIR}/erpc_c/common
 )
 
 
@@ -18,6 +19,10 @@ target_sources(pep PRIVATE
     ${CMAKE_CURRENT_LIST_DIR}/erpc_c/infra/erpc_basic_codec.cpp
     ${CMAKE_CURRENT_LIST_DIR}/erpc_c/setup/erpc_client_setup.cpp
     ${CMAKE_CURRENT_LIST_DIR}/erpc_c/setup/erpc_setup_mbf_dynamic.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/erpc_c/common/erpc_error_handler.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/erpc_c/setup/erpc_server_setup.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/erpc_c/infra/erpc_simple_server.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/erpc_c/infra/erpc_server.cpp 
 )
 
 if("${TARGET_ENVIRONMENT}" STREQUAL "linux_pepdev" OR "linux")
@@ -27,7 +32,9 @@ if("${TARGET_ENVIRONMENT}" STREQUAL "linux_pepdev" OR "linux")
         ${CMAKE_CURRENT_LIST_DIR}/erpc_c/setup/erpc_setup_rpmsg_linux.cpp 
         ${CMAKE_CURRENT_LIST_DIR}/erpc_c/transports/erpc_rpmsg_linux_transport.cpp
         ${CMAKE_CURRENT_LIST_DIR}/erpc_c/transports/erpc_rpmsg_linux_endpoint.cpp
+        
     )
+    target_include_directories(pep PUBLIC ${CMAKE_CURRENT_LIST_DIR}/erpc_c/common/linux)
 elseif("${TARGET_ENVIRONMENT}" STREQUAL "zephyr")
     target_sources(pep PRIVATE
         ${CMAKE_CURRENT_LIST_DIR}/erpc_c/port/erpc_port_zephyr.cpp
@@ -35,15 +42,11 @@ elseif("${TARGET_ENVIRONMENT}" STREQUAL "zephyr")
         ${CMAKE_CURRENT_LIST_DIR}/erpc_c/setup/erpc_setup_rpmsg_lite_rtos_remote.cpp 
         ${CMAKE_CURRENT_LIST_DIR}/erpc_c/transports/erpc_rpmsg_lite_rtos_transport.cpp
         ${CMAKE_CURRENT_LIST_DIR}/erpc_c/setup/erpc_setup_mbf_rpmsg.cpp
-        ${CMAKE_CURRENT_LIST_DIR}/erpc_c/setup/erpc_server_setup.cpp
         ${CMAKE_CURRENT_LIST_DIR}/erpc_c/infra/erpc_client_manager.cpp
-        ${CMAKE_CURRENT_LIST_DIR}/erpc_c/infra/erpc_simple_server.cpp
-        ${CMAKE_CURRENT_LIST_DIR}/erpc_c/infra/erpc_server.cpp
     )
+    target_include_directories(pep PUBLIC ${CMAKE_CURRENT_LIST_DIR}/erpc_c/common/zephyr)
 else()
     message(FATAL_ERROR"Invalid TARGET_ENVIRONMENT specified!")
 endif()
-
-
 
 message("done erpc CMakeLists.txt")

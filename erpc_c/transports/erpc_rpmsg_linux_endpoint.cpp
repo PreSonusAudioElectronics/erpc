@@ -26,15 +26,16 @@
  * ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  * This file was copied and renamed from https://github.com/EmbeddedRPC/erpc-imx-demos/tree/master/middleware/rpmsg-cpp
  * Adding the prefix "erpc_" to the filename
  */
 
 #include "erpc_rpmsg_linux_endpoint.h"
+
 #include <cassert>
-#include <fstream>
 #include <fcntl.h> /* For O_RDWR */
+#include <fstream>
 #include <iostream>
 #include <sstream>
 #include <string.h>
@@ -45,7 +46,8 @@ using namespace std;
 ////////////////////////////////////////////////////////////////////////////////
 // Code
 ////////////////////////////////////////////////////////////////////////////////
-RPMsgEndpoint::RPMsgEndpoint(int16_t new_addr = kLocalDefaultAddress, int8_t type = kDatagram, int16_t remote_addr = kRemoteDefaultAddress)
+RPMsgEndpoint::RPMsgEndpoint(int16_t new_addr = kLocalDefaultAddress, int8_t type = kDatagram,
+                             int16_t remote_addr = kRemoteDefaultAddress)
 : m_id(1)
 , m_type(type)
 , m_addr(new_addr)
@@ -61,7 +63,7 @@ int8_t RPMsgEndpoint::init()
     fstream fd;
     stringstream path;
 
-    //Get the channel specific default endpoint address
+    // Get the channel specific default endpoint address
     if (m_addr == kLocalDefaultAddress)
     {
         path.str("");
@@ -77,7 +79,7 @@ int8_t RPMsgEndpoint::init()
         fd.close();
     }
 
-    //Create the new endpoint
+    // Create the new endpoint
     path.str("");
     path << m_rpmsg_root << "/channel_" << m_id << "/ept_new";
     fd.open(path.str().c_str(), fstream::out);
@@ -105,7 +107,7 @@ int8_t RPMsgEndpoint::init()
 
     if (m_type == kStream)
     {
-        //Get the channel specific default endpoint address
+        // Get the channel specific default endpoint address
         if (m_remote == kRemoteDefaultAddress)
         {
             path.str("");
@@ -121,7 +123,7 @@ int8_t RPMsgEndpoint::init()
             fd.close();
         }
 
-        //src
+        // src
         path.str("");
         path << m_rpmsg_root << "/channel_" << m_id << "/rpmsg_ept" << m_addr << "." << m_id << "/src";
         fd.open(path.str().c_str(), fstream::out);
@@ -134,7 +136,7 @@ int8_t RPMsgEndpoint::init()
         fd << m_remote;
         fd.close();
 
-        //dst
+        // dst
         path.str("");
         path << m_rpmsg_root << "/channel_" << m_id << "/rpmsg_ept" << m_addr << "." << m_id << "/dst";
         fd.open(path.str().c_str(), fstream::out);
@@ -147,7 +149,7 @@ int8_t RPMsgEndpoint::init()
         fd << m_remote;
         fd.close();
     }
-    if ((m_type==kStream) || (m_type==kDatagram))
+    if ((m_type == kStream) || (m_type == kDatagram))
     {
         path.str("");
         path << "/dev/rpmsg_ept" << m_addr << "." << m_id;
@@ -171,10 +173,10 @@ RPMsgEndpoint::~RPMsgEndpoint()
     fstream fd;
     stringstream path;
 
-    //Close the opened endpoint
+    // Close the opened endpoint
     close(m_fd);
 
-    //Deinit the endpoint in the rpmsg internals
+    // Deinit the endpoint in the rpmsg internals
     path.str("");
     path << m_rpmsg_root << "/channel_" << m_id << "/ept_delete";
     fd.open(path.str().c_str(), fstream::out);
@@ -248,7 +250,7 @@ int32_t RPMsgEndpoint::receive(uint8_t *buffer, uint32_t maxlen)
     }
     else
     {
-        //nothing to read
+        // nothing to read
         return 0;
     }
 }

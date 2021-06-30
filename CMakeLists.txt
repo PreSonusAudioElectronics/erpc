@@ -44,12 +44,12 @@ elseif("${TARGET_ENVIRONMENT}" STREQUAL "zephyr")
     target_sources(pep PRIVATE
         ${CMAKE_CURRENT_LIST_DIR}/erpc_c/port/erpc_port_zephyr.cpp
         ${CMAKE_CURRENT_LIST_DIR}/erpc_c/port/erpc_threading_zephyr.cpp
-        # ${CMAKE_CURRENT_LIST_DIR}/erpc_c/setup/erpc_setup_rpmsg_lite_rtos_remote.cpp 
-        # ${CMAKE_CURRENT_LIST_DIR}/erpc_c/transports/erpc_rpmsg_lite_rtos_transport.cpp
-
+        ${CMAKE_CURRENT_LIST_DIR}/erpc_c/setup/erpc_setup_rpmsg_tty_rtos_remote.cpp 
+        ${CMAKE_CURRENT_LIST_DIR}/erpc_c/transports/erpc_rpmsg_tty_rtos_transport.cpp
         
-        ${CMAKE_CURRENT_LIST_DIR}/../erpcextensions/erpc_rpmsg_tty_rtos_transport_framed.cpp
-        ${CMAKE_CURRENT_LIST_DIR}/../erpcextensions/erpc_setup_rpmsg_tty_rtos_framed_remote.cpp
+        
+        # ${CMAKE_CURRENT_LIST_DIR}/../erpcextensions/erpc_rpmsg_tty_rtos_transport_framed.cpp
+        # ${CMAKE_CURRENT_LIST_DIR}/../erpcextensions/erpc_setup_rpmsg_tty_rtos_framed_remote.cpp
         
         ${CMAKE_CURRENT_LIST_DIR}/erpc_c/setup/erpc_setup_mbf_rpmsg.cpp
         # ${CMAKE_CURRENT_LIST_DIR}/erpc_c/setup/erpc_setup_mbf_static.cpp

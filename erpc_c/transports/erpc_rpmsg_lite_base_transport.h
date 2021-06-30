@@ -52,7 +52,7 @@ public:
     struct rpmsg_lite_instance *get_rpmsg_lite_instance(void) { return s_rpmsg; }
 
 protected:
-    struct rpmsg_lite_instance *s_rpmsg; /*!< Pointer to instance of RPMSG lite. */
+    static struct rpmsg_lite_instance *s_rpmsg; /*!< Pointer to instance of RPMSG lite. */
     static uint8_t s_initialized;               /*!< Represent information if the rpmsg-lite was initialized. */
 };
 

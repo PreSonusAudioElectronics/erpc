@@ -227,11 +227,12 @@ erpc_status_t RPMsgTTYRTOSTransport::init(uint32_t src_addr, uint32_t dst_addr, 
 
 erpc_status_t RPMsgTTYRTOSTransport::receive(MessageBuffer *message)
 {
-    erpc_status_t status = kErpcStatus_Success;
+    erpc_status_t status = kErpcStatus_ReceiveFailed;
     FramedTransport::Header h;
+    uint32_t headerLength = sizeof(h);
     char *buf = NULL;
-    uint32_t length = 0;
-    int32_t ret_val = rpmsg_queue_recv_nocopy(s_rpmsg, m_rpmsg_queue, &m_dst_addr, &buf, &length, RL_BLOCK);
+    uint32_t lengthReceived = 0;
+    int32_t ret_val = rpmsg_queue_recv_nocopy(s_rpmsg, m_rpmsg_queue, &m_dst_addr, &buf, &lengthReceived, RL_BLOCK);
     uint16_t computedCrc;
 
     assert(m_crcImpl && "Uninitialized Crc16 object.");
@@ -239,25 +240,82 @@ erpc_status_t RPMsgTTYRTOSTransport::receive(MessageBuffer *message)
 
     if (ret_val == RL_SUCCESS)
     {
-        memcpy((uint8_t *)&h, buf, sizeof(h));
-        message->set(&((uint8_t *)buf)[sizeof(h)], length - sizeof(h));
-
-        /* Verify CRC. */
-        computedCrc = m_crcImpl->computeCRC16(&((uint8_t *)buf)[sizeof(h)], h.m_messageSize);
-        if (computedCrc != h.m_crc)
+        /* Here we have to diverge paths because if the client is Python on Linux, it will 
+        send the whole message in one chunk, with the CRC calculated over the whole thing,
+        whereas the C++ client will separate the header from the message body, send them in 
+        two seperate transactions, with the CRC calculated on the message body only.  This is
+        a bug that should be done one way or the other in all cases.
+        */
+        if ( lengthReceived == headerLength )
         {
-            status = kErpcStatus_CrcCheckFailed;
+            /*
+            We've only received a header, so release the buffer and recieve the rest of the message
+            */
+            // copy the header and free the buffer
+            memcpy(&h, buf, headerLength );
+            int rc = rpmsg_queue_nocopy_free(s_rpmsg, buf);
+            if ( rc != RL_SUCCESS )
+            {
+                return static_cast<erpc_status_t>(rc);
+            }
+
+            buf = NULL;
+            lengthReceived = 0;
+            uint32_t length = 0;
+
+            while ( lengthReceived < h.m_messageSize )
+            {
+                // loop in case the message is broken up across multiple transactions
+                rc = rpmsg_queue_recv_nocopy(s_rpmsg, m_rpmsg_queue, &m_dst_addr, &buf, &length, RL_BLOCK);
+                if( rc != RL_SUCCESS )
+                {
+                    return static_cast<erpc_status_t>(rc);
+                }
+                lengthReceived += length;
+            }
+            assert(buf);
+
+            message->set(reinterpret_cast<uint8_t*>(buf), h.m_messageSize);
+
+            // buf now presumably contains the message body but not the header
+            uint16_t computedCrc = m_crcImpl->computeCRC16(reinterpret_cast<uint8_t*>(buf), h.m_messageSize);
+
+            if ( computedCrc != h.m_crc )
+            {
+                return static_cast<erpc_status_t>(kErpcStatus_CrcCheckFailed);
+            }
+
+            message->setUsed(h.m_messageSize);
+            return ret_val != RL_SUCCESS ? (erpc_status_t)kErpcStatus_ReceiveFailed : (erpc_status_t)kErpcStatus_Success;
+
+        }
+        else if ( lengthReceived == (headerLength + h.m_messageSize ))
+        {
+            /* 
+            We've alredy received the entire message, so calculate CRC on the whole thing.
+            This was how this code came from NXP.
+            */
+
+            // not sure why we memcpy here instead of casting a pointer...
+            memcpy((uint8_t *)&h, buf, sizeof(h));
+            message->set(&((uint8_t *)buf)[sizeof(h)], lengthReceived - sizeof(h));
+
+            /* Verify CRC. */
+            computedCrc = m_crcImpl->computeCRC16(&((uint8_t *)buf)[sizeof(h)], h.m_messageSize);
+            if (computedCrc != h.m_crc)
+            {
+                status = kErpcStatus_CrcCheckFailed;
+            }
+            else
+            {
+                message->setUsed(h.m_messageSize);
+            }
         }
         else
         {
-            message->setUsed(h.m_messageSize);
+            status = kErpcStatus_ReceiveFailed;
         }
     }
-    else
-    {
-        status = kErpcStatus_ReceiveFailed;
-    }
-
     return status;
 }
 

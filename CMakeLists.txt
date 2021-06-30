@@ -27,24 +27,40 @@ target_sources(pep PRIVATE
 
 if("${TARGET_ENVIRONMENT}" STREQUAL "linux_pepdev" OR "linux")
     target_sources(pep PRIVATE
-        ${CMAKE_CURRENT_LIST_DIR}/erpc_c/port/erpc_port_stdlib.cpp
+        # ${CMAKE_CURRENT_LIST_DIR}/erpc_c/port/erpc_port_stdlib.cpp
+        ${CMAKE_CURRENT_LIST_DIR}/erpc_c/port/erpc_serial.cpp
         ${CMAKE_CURRENT_LIST_DIR}/erpc_c/port/erpc_threading_pthreads.cpp
-        ${CMAKE_CURRENT_LIST_DIR}/erpc_c/setup/erpc_setup_rpmsg_linux.cpp 
-        ${CMAKE_CURRENT_LIST_DIR}/erpc_c/transports/erpc_rpmsg_linux_transport.cpp
-        ${CMAKE_CURRENT_LIST_DIR}/erpc_c/transports/erpc_rpmsg_linux_endpoint.cpp
+        ${CMAKE_CURRENT_LIST_DIR}/erpc_c/infra/erpc_framed_transport.cpp
+        # ${CMAKE_CURRENT_LIST_DIR}/erpc_c/setup/erpc_setup_rpmsg_linux.cpp 
+        ${CMAKE_CURRENT_LIST_DIR}/erpc_c/setup/erpc_setup_serial.cpp
+        ${CMAKE_CURRENT_LIST_DIR}/erpc_c/transports/erpc_serial_transport.cpp
+        # ${CMAKE_CURRENT_LIST_DIR}/erpc_c/transports/erpc_rpmsg_linux_transport.cpp
+        # ${CMAKE_CURRENT_LIST_DIR}/erpc_c/transports/erpc_rpmsg_linux_endpoint.cpp
         
     )
     target_include_directories(pep PUBLIC ${CMAKE_CURRENT_LIST_DIR}/erpc_c/common/linux)
 elseif("${TARGET_ENVIRONMENT}" STREQUAL "zephyr")
+    message("Zephyr eRPC adding sources relative to: ${CMAKE_CURRENT_LIST_DIR}")
     target_sources(pep PRIVATE
         ${CMAKE_CURRENT_LIST_DIR}/erpc_c/port/erpc_port_zephyr.cpp
         ${CMAKE_CURRENT_LIST_DIR}/erpc_c/port/erpc_threading_zephyr.cpp
-        ${CMAKE_CURRENT_LIST_DIR}/erpc_c/setup/erpc_setup_rpmsg_lite_rtos_remote.cpp 
-        ${CMAKE_CURRENT_LIST_DIR}/erpc_c/transports/erpc_rpmsg_lite_rtos_transport.cpp
+        # ${CMAKE_CURRENT_LIST_DIR}/erpc_c/setup/erpc_setup_rpmsg_lite_rtos_remote.cpp 
+        # ${CMAKE_CURRENT_LIST_DIR}/erpc_c/transports/erpc_rpmsg_lite_rtos_transport.cpp
+
+        
+        ${CMAKE_CURRENT_LIST_DIR}/../erpcextensions/erpc_rpmsg_tty_rtos_transport_framed.cpp
+        ${CMAKE_CURRENT_LIST_DIR}/../erpcextensions/erpc_setup_rpmsg_tty_rtos_framed_remote.cpp
+        
         ${CMAKE_CURRENT_LIST_DIR}/erpc_c/setup/erpc_setup_mbf_rpmsg.cpp
+        # ${CMAKE_CURRENT_LIST_DIR}/erpc_c/setup/erpc_setup_mbf_static.cpp
+
         ${CMAKE_CURRENT_LIST_DIR}/erpc_c/infra/erpc_client_manager.cpp
+        ${CMAKE_CURRENT_LIST_DIR}/erpc_c/infra/erpc_framed_transport.cpp
     )
-    target_include_directories(pep PUBLIC ${CMAKE_CURRENT_LIST_DIR}/erpc_c/common/zephyr)
+    target_include_directories(pep PUBLIC 
+        ${CMAKE_CURRENT_LIST_DIR}/erpc_c/common/zephyr
+        ${CMAKE_CURRENT_LIST_DIR}/../erpcextensions
+        )
 else()
     message(FATAL_ERROR"Invalid TARGET_ENVIRONMENT specified!")
 endif()

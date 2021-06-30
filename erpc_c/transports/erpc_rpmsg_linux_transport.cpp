@@ -68,5 +68,5 @@ erpc_status_t RPMsgLinuxTransport::receive(MessageBuffer *message)
         }
     }
 
-    return ret;
+    return static_cast<erpc_status_t>(ret);
 }

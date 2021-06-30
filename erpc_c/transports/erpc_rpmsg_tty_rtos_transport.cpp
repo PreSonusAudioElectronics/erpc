@@ -322,7 +322,8 @@ erpc_status_t RPMsgTTYRTOSTransport::receive(MessageBuffer *message)
 erpc_status_t RPMsgTTYRTOSTransport::send(MessageBuffer *message)
 {
     erpc_status_t status = kErpcStatus_Success;
-    FramedTransport::Header h;
+    FramedTransport::Header *header;
+    uint32_t headerSize = sizeof(FramedTransport::Header);
     uint8_t *buf = message->get();
     uint32_t length = message->getLength();
     uint32_t used = message->getUsed();
@@ -331,12 +332,55 @@ erpc_status_t RPMsgTTYRTOSTransport::send(MessageBuffer *message)
     assert(m_crcImpl && "Uninitialized Crc16 object.");
     message->set(NULL, 0);
 
-    h.m_crc = m_crcImpl->computeCRC16(buf, used);
-    h.m_messageSize = used;
 
-    (void)memcpy(&buf[-sizeof(h)], (uint8_t *)&h, sizeof(h));
+    /**
+     * @brief 
+     * 
+     * Code from NXP was doing this:
+     * (void)memcpy(&buf[-sizeof(h)], (uint8_t *)&h, sizeof(h));
+     * 
+     * Copying the header into memory starting before the start of the buffer.
+     * I don't understand how that ever could be expected to work, and as it happens
+     * it does not work (crashes the rpmsg system)
+     * 
+     * The Linux serial (aka tty) transport is a framed transport that expects a header
+     * with CRC and message length fields to be sent ahead of the main message body.
+     * 
+     * I've modified this code to do that here.
+     */
 
-    ret_val = rpmsg_lite_send_nocopy(s_rpmsg, m_rpmsg_ept, m_dst_addr, &buf[-sizeof(h)], used + sizeof(h));
+    /**
+     * eRPC transport has already allocated a buffer for the message body and 
+     * will later free it.  Here we locally allocate and free a buffer for
+     * the header which is sent separately
+     */
+
+    uint32_t hBufSize;
+    // TODO: spin and yield to play nicer with threads
+    uint8_t *headerBuf = (uint8_t*)rpmsg_lite_alloc_tx_buffer(s_rpmsg, &hBufSize, RL_BLOCK);
+
+    header = reinterpret_cast<FramedTransport::Header*>( headerBuf );
+
+    // calculate CRC on the message body
+    header->m_crc = m_crcImpl->computeCRC16(buf, used);
+    header->m_messageSize = used;
+
+    // send header
+    int rc = rpmsg_lite_send_nocopy(s_rpmsg, m_rpmsg_ept, m_dst_addr, headerBuf, headerSize );
+    if( rc != RL_SUCCESS )
+    {
+        status = kErpcStatus_ConnectionFailure;
+    }
+
+    // release the header buffer
+    rc = rpmsg_lite_release_rx_buffer(s_rpmsg, headerBuf);
+    if( status == kErpcStatus_ConnectionFailure )
+    {
+        return status;
+    }
+
+    // Now send the payload
+    ret_val = rpmsg_lite_send_nocopy(s_rpmsg, m_rpmsg_ept, m_dst_addr, buf, used);
     if (ret_val == RL_SUCCESS)
     {
         status = kErpcStatus_Success;

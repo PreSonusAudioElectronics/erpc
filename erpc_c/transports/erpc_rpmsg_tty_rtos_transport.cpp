@@ -20,6 +20,8 @@
 using namespace erpc;
 using namespace std;
 
+static const char * const kImxRpmsgTtyDriverMsg = "hello world!";
+
 ////////////////////////////////////////////////////////////////////////////////
 // Variables
 ////////////////////////////////////////////////////////////////////////////////
@@ -313,6 +315,16 @@ erpc_status_t RPMsgTTYRTOSTransport::receive(MessageBuffer *message)
         }
         else
         {
+            if( strcmp(kImxRpmsgTtyDriverMsg, buf) == 0 )
+            {
+                /**
+                 *  This is the startup message from the Linux Rpmsg TTY
+                 *  driver.  We don't do anything with it.
+                 */
+                message->setUsed(0);
+                int rc = rpmsg_queue_nocopy_free(s_rpmsg, buf);
+                assert( rc == RL_SUCCESS );
+            }
             status = kErpcStatus_ReceiveFailed;
         }
     }
@@ -334,7 +346,6 @@ erpc_status_t RPMsgTTYRTOSTransport::send(MessageBuffer *message)
 
 
     /**
-     * @brief 
      * 
      * Code from NXP was doing this:
      * (void)memcpy(&buf[-sizeof(h)], (uint8_t *)&h, sizeof(h));
@@ -347,17 +358,20 @@ erpc_status_t RPMsgTTYRTOSTransport::send(MessageBuffer *message)
      * with CRC and message length fields to be sent ahead of the main message body.
      * 
      * I've modified this code to do that here.
-     */
-
-    /**
+     *
      * eRPC transport has already allocated a buffer for the message body and 
-     * will later free it.  Here we locally allocate and free a buffer for
-     * the header which is sent separately
+     * will later free it.  Here we locally allocate a buffer for
+     * the header which is sent separately.  The receiver is responsible for freeing
+     * the buffer.
      */
 
     uint32_t hBufSize;
-    // TODO: spin and yield to play nicer with threads
-    uint8_t *headerBuf = (uint8_t*)rpmsg_lite_alloc_tx_buffer(s_rpmsg, &hBufSize, RL_BLOCK);
+    uint8_t *headerBuf = nullptr;
+    while( headerBuf == nullptr )
+    {
+        headerBuf = static_cast<uint8_t*>(rpmsg_lite_alloc_tx_buffer(s_rpmsg, &hBufSize, RL_DONT_BLOCK));
+        env_yield();
+    }
 
     header = reinterpret_cast<FramedTransport::Header*>( headerBuf );
 
@@ -370,13 +384,6 @@ erpc_status_t RPMsgTTYRTOSTransport::send(MessageBuffer *message)
     if( rc != RL_SUCCESS )
     {
         status = kErpcStatus_ConnectionFailure;
-    }
-
-    // release the header buffer
-    rc = rpmsg_lite_release_rx_buffer(s_rpmsg, headerBuf);
-    if( status == kErpcStatus_ConnectionFailure )
-    {
-        return status;
     }
 
     // Now send the payload

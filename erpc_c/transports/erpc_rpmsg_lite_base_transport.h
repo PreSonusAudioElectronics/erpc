@@ -36,6 +36,29 @@ namespace erpc {
  * @ingroup rpmsg_lite_transport
  * @ingroup rpmsg_lite_rtos_transport
  */
+
+#ifdef ERPC_BASE_TRANSPORT_NOT_STATIC
+class RPMsgBaseTransport : public Transport
+{
+public:
+    RPMsgBaseTransport(void)
+    : Transport(){};
+
+    virtual ~RPMsgBaseTransport(void) {}
+
+    /*!
+     * @brief This function returns pointer to instance of RPMSG lite
+     *
+     * @retval pointer to instance of RPMSG lite
+     */
+    struct rpmsg_lite_instance *get_rpmsg_lite_instance(void) { return s_rpmsg; }
+
+protected:
+    struct rpmsg_lite_instance *s_rpmsg = nullptr; /*!< Pointer to instance of RPMSG lite. */
+    uint8_t s_initialized = 0;               /*!< Represent information if the rpmsg-lite was initialized. */
+};
+
+#else
 class RPMsgBaseTransport : public Transport
 {
 public:
@@ -55,6 +78,8 @@ protected:
     static struct rpmsg_lite_instance *s_rpmsg; /*!< Pointer to instance of RPMSG lite. */
     static uint8_t s_initialized;               /*!< Represent information if the rpmsg-lite was initialized. */
 };
+
+#endif
 
 } // namespace erpc
 

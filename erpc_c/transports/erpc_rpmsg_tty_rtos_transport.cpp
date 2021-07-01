@@ -25,8 +25,10 @@ static const char * const kImxRpmsgTtyDriverMsg = "hello world!";
 ////////////////////////////////////////////////////////////////////////////////
 // Variables
 ////////////////////////////////////////////////////////////////////////////////
+#ifndef ERPC_BASE_TRANSPORT_NOT_STATIC
 uint8_t RPMsgBaseTransport::s_initialized = 0U;
 struct rpmsg_lite_instance *RPMsgBaseTransport::s_rpmsg;
+#endif
 
 ////////////////////////////////////////////////////////////////////////////////
 // Code
@@ -234,7 +236,13 @@ erpc_status_t RPMsgTTYRTOSTransport::receive(MessageBuffer *message)
     uint32_t headerLength = sizeof(h);
     char *buf = NULL;
     uint32_t lengthReceived = 0;
-    int32_t ret_val = rpmsg_queue_recv_nocopy(s_rpmsg, m_rpmsg_queue, &m_dst_addr, &buf, &lengthReceived, RL_BLOCK);
+    int32_t ret_val;
+
+    while( buf == NULL)
+    {
+        ret_val = rpmsg_queue_recv_nocopy(s_rpmsg, m_rpmsg_queue, &m_dst_addr, &buf, &lengthReceived, RL_DONT_BLOCK);
+        env_yield();
+    }
     uint16_t computedCrc;
 
     assert(m_crcImpl && "Uninitialized Crc16 object.");
@@ -265,17 +273,16 @@ erpc_status_t RPMsgTTYRTOSTransport::receive(MessageBuffer *message)
             lengthReceived = 0;
             uint32_t length = 0;
 
-            while ( lengthReceived < h.m_messageSize )
+            while( buf == NULL)
             {
-                // loop in case the message is broken up across multiple transactions
-                rc = rpmsg_queue_recv_nocopy(s_rpmsg, m_rpmsg_queue, &m_dst_addr, &buf, &length, RL_BLOCK);
-                if( rc != RL_SUCCESS )
-                {
-                    return static_cast<erpc_status_t>(rc);
-                }
-                lengthReceived += length;
+                rc = rpmsg_queue_recv_nocopy(s_rpmsg, m_rpmsg_queue, &m_dst_addr, &buf, &length, RL_DONT_BLOCK);
+                env_yield();
             }
-            assert(buf);
+            if( rc != RL_SUCCESS )
+            {
+                return static_cast<erpc_status_t>(rc);
+            }
+            lengthReceived += length;
 
             message->set(reinterpret_cast<uint8_t*>(buf), h.m_messageSize);
 
@@ -318,8 +325,9 @@ erpc_status_t RPMsgTTYRTOSTransport::receive(MessageBuffer *message)
             if( strcmp(kImxRpmsgTtyDriverMsg, buf) == 0 )
             {
                 /**
-                 *  This is the startup message from the Linux Rpmsg TTY
-                 *  driver.  We don't do anything with it.
+                 * This is the startup message from the Linux Rpmsg TTY
+                 * driver.  We don't do anything with it, but we do need
+                 * to free the buffer in came in.
                  */
                 message->setUsed(0);
                 int rc = rpmsg_queue_nocopy_free(s_rpmsg, buf);

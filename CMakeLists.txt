@@ -30,9 +30,14 @@ if("${TARGET_ENVIRONMENT}" STREQUAL "linux_pepdev" OR "linux")
         ${CMAKE_CURRENT_LIST_DIR}/erpc_c/port/erpc_threading_pthreads.cpp
         ${CMAKE_CURRENT_LIST_DIR}/erpc_c/infra/erpc_framed_transport.cpp
         ${CMAKE_CURRENT_LIST_DIR}/erpc_c/setup/erpc_setup_serial.cpp
-        ${CMAKE_CURRENT_LIST_DIR}/erpc_c/transports/erpc_serial_transport.cpp        
+        ${CMAKE_CURRENT_LIST_DIR}/erpc_c/transports/erpc_serial_transport.cpp
+        ${CMAKE_CURRENT_LIST_DIR}/../erpcextensions/linux/erpc_setup_serial_ext.cpp     
     )
-    target_include_directories(pep PUBLIC ${CMAKE_CURRENT_LIST_DIR}/erpc_c/common/linux)
+
+    target_include_directories(pep PUBLIC 
+        ${CMAKE_CURRENT_LIST_DIR}/erpc_c/common/linux
+        ${CMAKE_CURRENT_LIST_DIR}/../erpcextensions/linux
+    )
 elseif("${TARGET_ENVIRONMENT}" STREQUAL "zephyr")
     message("Zephyr eRPC adding sources relative to: ${CMAKE_CURRENT_LIST_DIR}")
     target_sources(pep PRIVATE
@@ -44,13 +49,14 @@ elseif("${TARGET_ENVIRONMENT}" STREQUAL "zephyr")
         ${CMAKE_CURRENT_LIST_DIR}/erpc_c/infra/erpc_client_manager.cpp
         ${CMAKE_CURRENT_LIST_DIR}/erpc_c/infra/erpc_framed_transport.cpp
 
-        ${CMAKE_CURRENT_LIST_DIR}/../erpcextensions/erpc_rpmsg_manager.cpp
-        ${CMAKE_CURRENT_LIST_DIR}/../erpcextensions/erpc_ext_transport_setup.cpp
-        ${CMAKE_CURRENT_LIST_DIR}/../erpcextensions/erpc_rpmsg_tty_rtos_multiept_transport.cpp
+        ${CMAKE_CURRENT_LIST_DIR}/../erpcextensions/rtos/erpc_rpmsg_manager.cpp
+        ${CMAKE_CURRENT_LIST_DIR}/../erpcextensions/rtos/erpc_ext_transport_setup.cpp
+        ${CMAKE_CURRENT_LIST_DIR}/../erpcextensions/rtos/erpc_rpmsg_tty_rtos_multiept_transport.cpp
     )
     target_include_directories(pep PUBLIC 
         ${CMAKE_CURRENT_LIST_DIR}/erpc_c/common/zephyr
         ${CMAKE_CURRENT_LIST_DIR}/../erpcextensions
+        ${CMAKE_CURRENT_LIST_DIR}/../erpcextensions/rtos
         )
     target_compile_definitions(pep PUBLIC ERPC_BASE_TRANSPORT_NOT_STATIC)
 else()

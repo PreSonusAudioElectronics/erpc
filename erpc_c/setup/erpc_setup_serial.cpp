@@ -28,7 +28,7 @@ erpc_transport_t erpc_transport_serial_init(const char *portName, long baudRate)
 {
     erpc_transport_t transport;
     const uint8_t vtime = 0;
-    const uint8_t vmin = 1;
+    const uint8_t vmin = 0;
 
     s_transport.construct(portName, baudRate);
     if (s_transport->init(vtime, vmin) == kErpcStatus_Success)

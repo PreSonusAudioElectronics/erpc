@@ -20,8 +20,6 @@
 using namespace erpc;
 using namespace std;
 
-static const char * const kImxRpmsgTtyDriverMsg = "hello world!";
-
 ////////////////////////////////////////////////////////////////////////////////
 // Variables
 ////////////////////////////////////////////////////////////////////////////////
@@ -236,7 +234,7 @@ erpc_status_t RPMsgTTYRTOSTransport::receive(MessageBuffer *message)
     uint32_t headerLength = sizeof(h);
     char *buf = NULL;
     uint32_t lengthReceived = 0;
-    int32_t ret_val;
+    int32_t ret_val = RL_ALREADY_DONE;
 
     while( buf == NULL)
     {

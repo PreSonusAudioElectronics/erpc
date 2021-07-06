@@ -38,6 +38,11 @@ namespace erpc {
  */
 
 #ifdef ERPC_BASE_TRANSPORT_NOT_STATIC
+/**
+ * @brief This alternate base class is provided to enable multiple instances
+ * of serial transport in the same project.
+ * 
+ */
 class RPMsgBaseTransport : public Transport
 {
 public:

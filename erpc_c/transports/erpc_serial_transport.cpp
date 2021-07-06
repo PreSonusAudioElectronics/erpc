@@ -107,7 +107,7 @@ erpc_status_t SerialTransport::underlyingReceive(uint8_t *data, uint32_t size)
     while ( bytesRead == 0 )
     {
         bytesRead = serial_read(m_serialHandle, (char *)data, size);
-        std::this_thread::yield();
+        std::this_thread::sleep_for(std::chrono::milliseconds(1));
     }
 
     return (size != bytesRead) ? kErpcStatus_ReceiveFailed : kErpcStatus_Success;

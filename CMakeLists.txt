@@ -31,7 +31,8 @@ if("${TARGET_ENVIRONMENT}" STREQUAL "linux_pepdev" OR "linux")
         ${CMAKE_CURRENT_LIST_DIR}/erpc_c/infra/erpc_framed_transport.cpp
         ${CMAKE_CURRENT_LIST_DIR}/erpc_c/setup/erpc_setup_serial.cpp
         ${CMAKE_CURRENT_LIST_DIR}/erpc_c/transports/erpc_serial_transport.cpp
-        ${CMAKE_CURRENT_LIST_DIR}/../erpcextensions/linux/erpc_setup_serial_ext.cpp     
+        ${CMAKE_CURRENT_LIST_DIR}/../erpcextensions/linux/erpc_setup_serial_ext.cpp
+        ${CMAKE_CURRENT_LIST_DIR}/../erpcextensions/linux/erpc_serial_transport_ext.cpp  
     )
 
     target_include_directories(pep PUBLIC 

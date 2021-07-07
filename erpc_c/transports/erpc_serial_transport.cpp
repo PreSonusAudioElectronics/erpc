@@ -24,8 +24,6 @@
 #include <termios.h>
 #endif
 
-#include <thread>
-
 using namespace erpc;
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -102,13 +100,7 @@ erpc_status_t SerialTransport::underlyingSend(const uint8_t *data, uint32_t size
 }
 erpc_status_t SerialTransport::underlyingReceive(uint8_t *data, uint32_t size)
 {
-    uint32_t bytesRead = 0;
-
-    while ( bytesRead == 0 )
-    {
-        bytesRead = serial_read(m_serialHandle, (char *)data, size);
-        std::this_thread::sleep_for(std::chrono::milliseconds(1));
-    }
+    uint32_t bytesRead = serial_read(m_serialHandle, (char *)data, size);
 
     return (size != bytesRead) ? kErpcStatus_ReceiveFailed : kErpcStatus_Success;
 }

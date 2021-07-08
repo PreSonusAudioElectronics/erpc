@@ -50,9 +50,9 @@ elseif("${TARGET_ENVIRONMENT}" STREQUAL "zephyr")
         ${CMAKE_CURRENT_LIST_DIR}/erpc_c/infra/erpc_client_manager.cpp
         ${CMAKE_CURRENT_LIST_DIR}/erpc_c/infra/erpc_framed_transport.cpp
 
-        ${CMAKE_CURRENT_LIST_DIR}/../erpcextensions/rtos/erpc_rpmsg_manager.cpp
-        ${CMAKE_CURRENT_LIST_DIR}/../erpcextensions/rtos/erpc_ext_transport_setup.cpp
-        ${CMAKE_CURRENT_LIST_DIR}/../erpcextensions/rtos/erpc_rpmsg_tty_rtos_multiept_transport.cpp
+        ${CMAKE_CURRENT_LIST_DIR}/../erpcextensions/rtos/erpcrpmsgmanager.cpp
+        ${CMAKE_CURRENT_LIST_DIR}/../erpcextensions/rtos/erpcexttransportsetup.cpp
+        ${CMAKE_CURRENT_LIST_DIR}/../erpcextensions/rtos/erpcrpmsgttyrtosmultiepttransport.cpp
     )
     target_include_directories(pep PUBLIC 
         ${CMAKE_CURRENT_LIST_DIR}/erpc_c/common/zephyr

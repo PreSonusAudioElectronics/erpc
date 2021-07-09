@@ -41,6 +41,8 @@ namespace erpc {
 class RPMsgTTYRTOSTransport : public RPMsgBaseTransport
 {
 public:
+    static constexpr const char * const kImxRpmsgTtyDriverMsg = "hello world!";
+
     /*!
      * @brief Constructor.
      *

@@ -85,7 +85,7 @@ private:
      */
     virtual erpc_status_t underlyingReceive(uint8_t *data, uint32_t size);
 
-private:
+protected:
     int m_serialHandle;     /*!< Serial handle id. */
     const char *m_portName; /*!< Port name. */
     speed_t m_baudRate;     /*!< Bauderate. */

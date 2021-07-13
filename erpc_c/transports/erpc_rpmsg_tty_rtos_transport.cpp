@@ -239,7 +239,7 @@ erpc_status_t RPMsgTTYRTOSTransport::receive(MessageBuffer *message)
     while( buf == NULL)
     {
         ret_val = rpmsg_queue_recv_nocopy(s_rpmsg, m_rpmsg_queue, &m_dst_addr, &buf, &lengthReceived, RL_DONT_BLOCK);
-        env_yield();
+        env_sleep_msec(2);
     }
     uint16_t computedCrc;
 
@@ -274,7 +274,7 @@ erpc_status_t RPMsgTTYRTOSTransport::receive(MessageBuffer *message)
             while( buf == NULL)
             {
                 rc = rpmsg_queue_recv_nocopy(s_rpmsg, m_rpmsg_queue, &m_dst_addr, &buf, &length, RL_DONT_BLOCK);
-                env_yield();
+                env_sleep_msec(2);
             }
             if( rc != RL_SUCCESS )
             {
@@ -376,7 +376,7 @@ erpc_status_t RPMsgTTYRTOSTransport::send(MessageBuffer *message)
     while( headerBuf == nullptr )
     {
         headerBuf = static_cast<uint8_t*>(rpmsg_lite_alloc_tx_buffer(s_rpmsg, &hBufSize, RL_DONT_BLOCK));
-        env_yield();
+        env_sleep_msec(2);
     }
 
     header = reinterpret_cast<FramedTransport::Header*>( headerBuf );

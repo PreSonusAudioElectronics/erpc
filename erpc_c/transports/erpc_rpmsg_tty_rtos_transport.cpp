@@ -87,7 +87,7 @@ erpc_status_t RPMsgTTYRTOSTransport::init(uint32_t src_addr, uint32_t dst_addr, 
 
     if (0U == s_initialized)
     {
-        s_rpmsg = rpmsg_lite_master_init(base_address, length, rpmsg_link_id, RL_NO_FLAGS);
+        s_rpmsg = rpmsg_lite_master_init(base_address, length, rpmsg_link_id, RL_NO_FLAGS, nullptr);
         if (s_rpmsg == RL_NULL)
         {
             status = kErpcStatus_InitFailed;
@@ -146,7 +146,7 @@ erpc_status_t RPMsgTTYRTOSTransport::init(uint32_t src_addr, uint32_t dst_addr, 
 
     if (0U == s_initialized)
     {
-        s_rpmsg = rpmsg_lite_remote_init(base_address, rpmsg_link_id, RL_NO_FLAGS);
+        s_rpmsg = rpmsg_lite_remote_init(base_address, rpmsg_link_id, RL_NO_FLAGS, nullptr);
         if (s_rpmsg == RL_NULL)
         {
             status = kErpcStatus_InitFailed;

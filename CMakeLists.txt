@@ -60,6 +60,24 @@ elseif("${TARGET_ENVIRONMENT}" STREQUAL "zephyr")
         ${CMAKE_CURRENT_LIST_DIR}/../erpcextensions/rtos
         )
     target_compile_definitions(pep PUBLIC ERPC_BASE_TRANSPORT_NOT_STATIC)
+elseif("${TARGET_ENVIRONMENT}" STREQUAL "lk")
+    message("Littlekernel eRPC adding sources relative to: ${CMAKE_CURRENT_LIST_DIR}")
+    target_sources(pep PRIVATE
+        ${CMAKE_CURRENT_LIST_DIR}/../erpcextensions/port/erpc_port_littlekernel.cpp
+        ${CMAKE_CURRENT_LIST_DIR}/../erpcextensions/port/erpc_threading_littlekernel.cpp
+        ${CMAKE_CURRENT_LIST_DIR}/erpc_c/infra/erpc_framed_transport.cpp
+        ${CMAKE_CURRENT_LIST_DIR}/../erpcextensions/port/erpc_port_littlekernel.cpp
+        # ${CMAKE_CURRENT_LIST_DIR}/erpc_c/setup/erpc_setup_serial.cpp
+        # ${CMAKE_CURRENT_LIST_DIR}/erpc_c/transports/erpc_serial_transport.cpp
+        ${CMAKE_CURRENT_LIST_DIR}/../erpcextensions/transports/erpc_transport_chardev.cpp
+        ${CMAKE_CURRENT_LIST_DIR}/../erpcextensions/setup/erpc_setup_chardev.cpp
+    )
+    target_include_directories(pep PUBLIC
+        ${CMAKE_CURRENT_LIST_DIR}/erpc_c/common/littlekernel
+        ${CMAKE_CURRENT_LIST_DIR}/../erpcextensions
+        ${CMAKE_CURRENT_LIST_DIR}/../erpcextensions/rtos
+        ${CMAKE_CURRENT_LIST_DIR}/../erpcextensions/transports
+    )
 else()
     message(FATAL_ERROR"Invalid TARGET_ENVIRONMENT specified!")
 endif()

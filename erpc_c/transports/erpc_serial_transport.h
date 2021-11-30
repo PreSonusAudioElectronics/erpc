@@ -60,7 +60,7 @@ public:
      *
      * @return Status of init function.
      */
-    erpc_status_t init(uint8_t vtime, uint8_t vmin);
+    virtual erpc_status_t init(uint8_t vtime, uint8_t vmin);
 
 private:
     /*!

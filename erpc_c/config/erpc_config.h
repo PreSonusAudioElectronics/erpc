@@ -30,6 +30,7 @@
 #define ERPC_THREADS_MBED (4)     //!< Mbed OS
 #define ERPC_THREADS_WIN32 (5)    //!< WIN32
 #define ERPC_THREADS_THREADX (6)    //!< THREADX
+#define ERPC_THREADS_LITTLEKERNEL (7) //!< LITTLEKERNEL
 
 #define ERPC_NOEXCEPT_DISABLED (0) //!< Disabling noexcept feature.
 #define ERPC_NOEXCEPT_ENABLED (1)  //!<  Enabling noexcept feature.

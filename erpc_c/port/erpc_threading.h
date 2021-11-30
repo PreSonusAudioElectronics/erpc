@@ -16,7 +16,6 @@
 
 // Exclude the rest of the file if threading is disabled.
 #if !ERPC_THREADS_IS(NONE)
-
 #if ERPC_THREADS_IS(PTHREADS)
 #include <pthread.h>
 #elif ERPC_THREADS_IS(FREERTOS)
@@ -35,7 +34,10 @@
 #include "windows.h"
 #elif ERPC_THREADS_IS(THREADX)
 #include "tx_api.h"
-
+#elif ERPC_THREADS_IS(LITTLEKERNEL)
+#include <kernel/thread.h>
+#include <kernel/semaphore.h>
+#include <kernel/mutex.h>
 #endif // ERPC_THREADS
 
 /*!
@@ -154,6 +156,8 @@ public:
         return reinterpret_cast<thread_id_t>(m_thread);
 #elif ERPC_THREADS_IS(THREADX)    
         return reinterpret_cast<thread_id_t>(m_thread.tx_thread_id);
+#elif ERPC_THREADS_IS(LITTLEKERNEL)
+
 #endif
     }
 
@@ -176,6 +180,8 @@ public:
         return reinterpret_cast<thread_id_t>(GetCurrentThread());
 #elif ERPC_THREADS_IS(THREADX)
         return reinterpret_cast<thread_id_t>(tx_thread_identify());
+#elif ERPC_THREADS_IS(LITTLEKERNEL)
+        return reinterpret_cast<thread_id_t>(get_current_thread());
 #endif
     }
 
@@ -242,6 +248,10 @@ private:
     TX_THREAD m_thread;     /*!< Underlying Thread instance */
     Thread *m_next;         /*!< Pointer to next Thread. */
     static Thread *s_first; /*!< Pointer to first Thread. */
+#elif ERPC_THREADS_IS(LITTLEKERNEL)
+    thread_t *m_thread;
+    thread_t *m_next;
+    static thread_t *s_first;
 #endif
 
 #if ERPC_THREADS_IS(PTHREADS)
@@ -297,6 +307,15 @@ private:
      * @param[in] arg Thread to execute.
      */
     static void threadEntryPointStub(ULONG arg);
+#elif ERPC_THREADS_IS(LITTLEKERNEL)
+
+    /*!
+     * \brief This function executes the threadEntryPoint function
+     * 
+     * \param arg Thread to execute
+     * \return int retval
+     */
+    static int threadEntryPointStub(void *arg);
 #endif
 
 private:
@@ -406,6 +425,8 @@ private:
     HANDLE m_mutex;
 #elif ERPC_THREADS_IS(THREADX)
     TX_MUTEX m_mutex;
+#elif ERPC_THREADS_IS(LITTLEKERNEL)
+    mutex_t m_mutex;
 #endif
 
 private:
@@ -496,6 +517,8 @@ private:
     HANDLE m_sem;
 #elif ERPC_THREADS_IS(THREADX)
     TX_SEMAPHORE m_sem;   /*!< Semaphore. */
+#elif ERPC_THREADS_IS(LITTLEKERNEL)
+    semaphore_t m_sem;
 #endif
 
 private:

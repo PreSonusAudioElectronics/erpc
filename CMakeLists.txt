@@ -67,8 +67,6 @@ elseif("${TARGET_ENVIRONMENT}" STREQUAL "lk")
         ${CMAKE_CURRENT_LIST_DIR}/../erpcextensions/port/erpc_threading_littlekernel.cpp
         ${CMAKE_CURRENT_LIST_DIR}/erpc_c/infra/erpc_framed_transport.cpp
         ${CMAKE_CURRENT_LIST_DIR}/../erpcextensions/port/erpc_port_littlekernel.cpp
-        # ${CMAKE_CURRENT_LIST_DIR}/erpc_c/setup/erpc_setup_serial.cpp
-        # ${CMAKE_CURRENT_LIST_DIR}/erpc_c/transports/erpc_serial_transport.cpp
         ${CMAKE_CURRENT_LIST_DIR}/../erpcextensions/transports/erpc_transport_chardev.cpp
         ${CMAKE_CURRENT_LIST_DIR}/../erpcextensions/setup/erpc_setup_chardev.cpp
     )
@@ -77,6 +75,7 @@ elseif("${TARGET_ENVIRONMENT}" STREQUAL "lk")
         ${CMAKE_CURRENT_LIST_DIR}/../erpcextensions
         ${CMAKE_CURRENT_LIST_DIR}/../erpcextensions/rtos
         ${CMAKE_CURRENT_LIST_DIR}/../erpcextensions/transports
+        ${CMAKE_CURRENT_LIST_DIR}/../erpcextensions/setup
     )
 else()
     message(FATAL_ERROR"Invalid TARGET_ENVIRONMENT specified!")

@@ -157,7 +157,7 @@ public:
 #elif ERPC_THREADS_IS(THREADX)    
         return reinterpret_cast<thread_id_t>(m_thread.tx_thread_id);
 #elif ERPC_THREADS_IS(LITTLEKERNEL)
-
+    return reinterpret_cast<thread_id_t>(m_thread);
 #endif
     }
 

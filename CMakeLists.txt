@@ -76,6 +76,11 @@ elseif("${TARGET_ENVIRONMENT}" STREQUAL "lk")
         ${CMAKE_CURRENT_LIST_DIR}/../erpcextensions/rtos
         ${CMAKE_CURRENT_LIST_DIR}/../erpcextensions/transports
         ${CMAKE_CURRENT_LIST_DIR}/../erpcextensions/setup
+        ${CMAKE_CURRENT_LIST_DIR}/../erpcextensions/port
+    )
+
+    target_compile_definitions(pep PUBLIC
+        ERPC_ENV_IS_LITTLEKERNEL=1
     )
 else()
     message(FATAL_ERROR"Invalid TARGET_ENVIRONMENT specified!")

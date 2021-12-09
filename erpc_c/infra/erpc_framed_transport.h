@@ -131,6 +131,10 @@ protected:
     /*!
      * @brief Subclasses must implement this function to receive data.
      *
+     * Note: implementations of this function must only return when
+     * either exactly the number of byte specified by size has been
+     * received, or the receive operation has failed.
+     *
      * @param[inout] data Preallocated buffer for receiving data.
      * @param[in] size Size of data to read.
      *

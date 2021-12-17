@@ -29,77 +29,77 @@ void erpc_error_handler(erpc_status_t err, uint32_t functionID)
     switch (err)
     {
         case (erpc_status_t)kErpcStatus_Fail:
-            ERPC_TRACEF("\r\nGeneric failure.");
+            ERPC_PRINTF("\r\nGeneric failure.\n");
             break;
 
         case (erpc_status_t)kErpcStatus_InvalidArgument:
-            ERPC_TRACEF("\r\nArgument is an invalid value.");
+            ERPC_PRINTF("\r\nArgument is an invalid value.\n");
             break;
 
         case (erpc_status_t)kErpcStatus_Timeout:
-            ERPC_TRACEF("\r\nOperated timed out.");
+            ERPC_PRINTF("\r\nOperated timed out.\n");
             break;
 
         case (erpc_status_t)kErpcStatus_InvalidMessageVersion:
-            ERPC_TRACEF("\r\nMessage header contains an unknown version.");
+            ERPC_PRINTF("\r\nMessage header contains an unknown version.\n");
             break;
 
         case (erpc_status_t)kErpcStatus_ExpectedReply:
-            ERPC_TRACEF("\r\nExpected a reply message but got another message type.");
+            ERPC_PRINTF("\r\nExpected a reply message but got another message type.\n");
             break;
 
         case (erpc_status_t)kErpcStatus_CrcCheckFailed:
-            ERPC_TRACEF("\r\nMessage is corrupted.");
+            ERPC_PRINTF("\r\nMessage is corrupted.\n");
             break;
 
         case (erpc_status_t)kErpcStatus_BufferOverrun:
-            ERPC_TRACEF("\r\nAttempt to read or write past the end of a buffer.");
+            ERPC_PRINTF("\r\nAttempt to read or write past the end of a buffer.\n");
             break;
 
         case (erpc_status_t)kErpcStatus_UnknownName:
-            ERPC_TRACEF("\r\nCould not find host with given name.");
+            ERPC_PRINTF("\r\nCould not find host with given name.\n");
             break;
 
         case (erpc_status_t)kErpcStatus_ConnectionFailure:
-            ERPC_TRACEF("\r\nFailed to connect to host.");
+            ERPC_PRINTF("\r\nFailed to connect to host.\n");
             break;
 
         case (erpc_status_t)kErpcStatus_ConnectionClosed:
-            ERPC_TRACEF("\r\nConnected closed by peer.");
+            ERPC_PRINTF("\r\nConnected closed by peer.\n");
             break;
 
         case (erpc_status_t)kErpcStatus_MemoryError:
-            ERPC_TRACEF("\r\nMemory allocation error.");
+            ERPC_PRINTF("\r\nMemory allocation error.\n");
             break;
 
         case (erpc_status_t)kErpcStatus_ServerIsDown:
-            ERPC_TRACEF("\r\nServer is stopped.");
+            ERPC_PRINTF("\r\nServer is stopped.\n");
             break;
 
         case (erpc_status_t)kErpcStatus_InitFailed:
-            ERPC_TRACEF("\r\nTransport layer initialization failed.");
+            ERPC_PRINTF("\r\nTransport layer initialization failed.\n");
             break;
 
         case (erpc_status_t)kErpcStatus_ReceiveFailed:
-            ERPC_TRACEF("\r\nFailed to receive data.");
+            ERPC_PRINTF("\r\nFailed to receive data.\n");
             break;
 
         case (erpc_status_t)kErpcStatus_SendFailed:
-            ERPC_TRACEF("\r\nFailed to send data.");
+            ERPC_PRINTF("\r\nFailed to send data.\n");
             break;
 
         /* unhandled error */
         default:
-            ERPC_TRACEF("\r\nUnhandled error occurred.");
+            ERPC_PRINTF("\r\nUnhandled error occurred.\n");
             break;
     }
 
     /* When error occurred on client side. */
     if (functionID != 0U)
     {
-        ERPC_TRACEF("Function id '%u'.", (unsigned int)functionID);
+        ERPC_PRINTF("Function id '%u'.", (unsigned int)functionID);
     }
-    ERPC_TRACEF("\r\n");
+    ERPC_PRINTF("\r\n");
 
     /* error occurred */
     g_erpc_error_occurred = true;
